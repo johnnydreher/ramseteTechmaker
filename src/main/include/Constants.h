@@ -32,29 +32,31 @@ constexpr int kRightMotor2Port = 7;
 constexpr int kLeftEncoderPorts[]{8, 7};
 constexpr int kRightEncoderPorts[]{4, 3};
 constexpr bool kLeftEncoderReversed = false;
-constexpr bool kRightEncoderReversed = true;
+constexpr bool kRightEncoderReversed = false;
 
-constexpr auto kTrackwidth = 0.465_m;
+constexpr auto kTrackwidth = 4.45_m;
 extern const frc::DifferentialDriveKinematics kDriveKinematics;
 
-constexpr int kEncoderCPR = 2048;
+constexpr int kEncoderCPR = 8192;
 constexpr double kWheelDiameterInches = 6;
-constexpr double kEncoderDistancePerPulse =
+constexpr double kEncoderDistancePerPulse = 0.48/2048.;
     // Assumes the encoders are directly mounted on the wheel shafts
-    (kWheelDiameterInches * wpi::math::pi) /
-    static_cast<double>(kEncoderCPR);
+    //(kWheelDiameterInches * wpi::math::pi) /
+    //static_cast<double>(kEncoderCPR);
 
 // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
 // These characterization values MUST be determined either experimentally or
 // theoretically for *your* robot's drive. The Robot Characterization
 // Toolsuite provides a convenient tool for obtaining these values for your
 // robot.
-constexpr auto ks = 0.22_V;
-constexpr auto kv = 1.98 * 1_V * 1_s / 1_m;
-constexpr auto ka = 0.2 * 1_V * 1_s * 1_s / 1_m;
+constexpr auto ks = 1.06_V;
+constexpr auto kv = 2.49 * 1_V * 1_s / 1_m;
+constexpr auto ka = 0.0375 * 1_V * 1_s * 1_s / 1_m;
 
 // Example value only - as above, this must be tuned for your drive!
-constexpr double kPDriveVel = 8.5;
+constexpr double kPDriveVel = 0.848;
+constexpr double kIDriveVel = 0.0;
+constexpr double kDDriveVel = 0.0;
 }  // namespace DriveConstants
 
 namespace AutoConstants {

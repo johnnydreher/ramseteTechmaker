@@ -28,7 +28,7 @@ RobotContainer::RobotContainer() {
   // Set up default drive command
   m_drive.SetDefaultCommand(frc2::RunCommand(
       [this] {
-        m_drive.ArcadeDrive(m_driverController.GetY(lHand),
+       m_drive.ArcadeDrive(-m_driverController.GetY(lHand),
                             m_driverController.GetX(rHand));
       },
       {&m_drive}));
@@ -61,11 +61,14 @@ frc2::Command* RobotContainer::GetAutonomousCommand() {
   // An example trajectory to follow.  All units in meters.
   auto exampleTrajectory = frc::TrajectoryGenerator::GenerateTrajectory(
       // Start at the origin facing the +X direction
-      frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
+      m_drive.GetPose(),
       // Pass through these two interior waypoints, making an 's' curve path
-      {frc::Translation2d(1_m, 1_m), frc::Translation2d(2_m, -1_m)},
+      {frc::Translation2d(7_m,0_m),
+      frc::Translation2d(7_m,3_m),
+      frc::Translation2d(7_m,3_m),
+      frc::Translation2d(7_m,3_m)},
       // End 3 meters straight ahead of where we started, facing forward
-      frc::Pose2d(3_m, 0_m, frc::Rotation2d(0_deg)),
+      frc::Pose2d(1_m, 3_m, frc::Rotation2d(180_deg)),
       // Pass the config
       config);
 

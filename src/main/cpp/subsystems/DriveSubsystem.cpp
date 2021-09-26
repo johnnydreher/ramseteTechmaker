@@ -14,17 +14,19 @@ DriveSubsystem::DriveSubsystem()
       m_left2{kLeftMotor2Port},
       m_right1{kRightMotor1Port},
       m_right2{kRightMotor2Port},
-      m_leftEncoder{kLeftEncoderPorts[0], kLeftEncoderPorts[1]},
-      m_rightEncoder{kRightEncoderPorts[0], kRightEncoderPorts[1]},
+      m_leftEncoder{kLeftEncoderPorts[0], kLeftEncoderPorts[1],false,frc::Encoder::k1X},
+      m_rightEncoder{kRightEncoderPorts[0], kRightEncoderPorts[1],false,frc::Encoder::k1X},
       m_odometry{m_gyro.GetRotation2d()} {
   // We need to invert one side of the drivetrain so that positive voltages
   // result in both sides moving forward. Depending on how your robot's
   // gearbox is constructed, you might have to invert the left side instead.
-  m_rightMotors.SetInverted(true);
+  m_rightMotors.SetInverted(false);
 
   // Set the distance per pulse for the encoders
   m_leftEncoder.SetDistancePerPulse(kEncoderDistancePerPulse);
   m_rightEncoder.SetDistancePerPulse(kEncoderDistancePerPulse);
+  m_leftEncoder.SetSamplesToAverage(10);
+  m_rightEncoder.SetSamplesToAverage(10);
 
   ResetEncoders();
 }
@@ -86,5 +88,6 @@ frc::DifferentialDriveWheelSpeeds DriveSubsystem::GetWheelSpeeds() {
 
 void DriveSubsystem::ResetOdometry(frc::Pose2d pose) {
   ResetEncoders();
+  m_gyro.ZeroYaw();
   m_odometry.ResetPosition(pose, m_gyro.GetRotation2d());
 }

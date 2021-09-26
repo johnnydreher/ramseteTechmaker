@@ -15,7 +15,8 @@
 
 #include "Constants.h"
 #include "subsystems/DriveSubsystem.h"
-
+#include <frc/trajectory/TrajectoryUtil.h>
+#include <wpi/Path.h>
 /**
  * This class is where the bulk of the robot should be declared.  Since
  * Command-based is a "declarative" paradigm, very little robot logic should
@@ -28,7 +29,7 @@ class RobotContainer {
   RobotContainer();
 
   frc2::Command* GetAutonomousCommand();
-
+ DriveSubsystem m_drive;
  private:
    frc::GenericHID::JoystickHand lHand = frc::GenericHID::kLeftHand;
   frc::GenericHID::JoystickHand rHand = frc::GenericHID::kRightHand;
@@ -38,7 +39,7 @@ class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
   // The robot's subsystems
-  DriveSubsystem m_drive;
+ 
 
   frc2::InstantCommand m_driveHalfSpeed{[this] { m_drive.SetMaxOutput(0.5); },
                                         {}};
