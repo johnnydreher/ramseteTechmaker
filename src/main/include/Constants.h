@@ -10,6 +10,7 @@
 #include <units/velocity.h>
 #include <units/voltage.h>
 #include <wpi/math>
+#include <frc/XboxController.h>
 
 
 #pragma once
@@ -54,13 +55,13 @@ constexpr auto kv = 2.49 * 1_V * 1_s / 1_m;
 constexpr auto ka = 0.0375 * 1_V * 1_s * 1_s / 1_m;
 
 // Example value only - as above, this must be tuned for your drive!
+//constexpr double kPDriveVel = 0.848;
 constexpr double kPDriveVel = 0.848;
-constexpr double kIDriveVel = 0.0;
-constexpr double kDDriveVel = 0.0;
+constexpr double kIDriveVel = 0.8;
+constexpr double kDDriveVel = 0.1;
 }  // namespace DriveConstants
-
 namespace AutoConstants {
-constexpr auto kMaxSpeed = 3_mps;
+constexpr auto kMaxSpeed = 8_mps;
 constexpr auto kMaxAcceleration = 3_mps_sq;
 
 // Reasonable baseline values for a RAMSETE follower in units of meters and
@@ -69,6 +70,27 @@ constexpr double kRamseteB = 2;
 constexpr double kRamseteZeta = 0.7;
 }  // namespace AutoConstants
 
+
+namespace ShooterConstants {
+constexpr int kLeftMotorPort = 1;
+constexpr int kRightMotorPort = 2;
+constexpr int kMiddleMotorPort = 3;
+constexpr int kConveyorMotorPort = 0;
+constexpr int kIntakeMotorPort = 8;
+
+
+constexpr int kTargetUp = 2;
+constexpr int kTargetDown = 3;
+
+constexpr int kIntakeUp = 0;
+constexpr int kIntakeDown = 1;
+
+constexpr int kMaxSpeed = 1;
+
+}  // namespace DriveConstants
+constexpr frc::GenericHID::JoystickHand lHand = frc::GenericHID::kLeftHand;
+constexpr frc::GenericHID::JoystickHand rHand = frc::GenericHID::kRightHand;
 namespace OIConstants {
 constexpr int kDriverControllerPort = 0;
+ 
 }  // namespace OIConstants

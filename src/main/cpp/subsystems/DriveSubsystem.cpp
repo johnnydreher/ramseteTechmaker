@@ -6,7 +6,8 @@
 
 #include <frc/geometry/Rotation2d.h>
 #include <frc/kinematics/DifferentialDriveWheelSpeeds.h>
-
+#include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/smartdashboard/SendableChooser.h>
 using namespace DriveConstants;
 
 DriveSubsystem::DriveSubsystem()
@@ -36,6 +37,11 @@ void DriveSubsystem::Periodic() {
   m_odometry.Update(m_gyro.GetRotation2d(),
                     units::meter_t(m_leftEncoder.GetDistance()),
                     units::meter_t(m_rightEncoder.GetDistance()));
+  frc::SmartDashboard::PutNumber("Angulo", m_gyro.GetAngle());
+  frc::SmartDashboard::PutNumber("Encoder Direita", GetRightEncoder().GetDistance());
+  frc::SmartDashboard::PutNumber("Encoder Esquerda", GetLeftEncoder().GetDistance());
+  frc::SmartDashboard::PutNumber("X", GetPose().X().value());
+  frc::SmartDashboard::PutNumber("Y", GetPose().Y().value());
 }
 
 void DriveSubsystem::ArcadeDrive(double fwd, double rot) {

@@ -19,77 +19,142 @@
 
 #include "Constants.h"
 
-RobotContainer::RobotContainer() {
-  // Initialize all of your commands and subsystems here
+RobotContainer::RobotContainer()
+{
+    // Initialize all of your commands and subsystems here
 
-  // Configure the button bindings
-  ConfigureButtonBindings();
+    // Configure the button bindings
+    ConfigureButtonBindings();
 
-  // Set up default drive command
-  m_drive.SetDefaultCommand(frc2::RunCommand(
-      [this] {
-       m_drive.ArcadeDrive(-m_driverController.GetY(lHand),
-                            m_driverController.GetX(rHand));
-      },
-      {&m_drive}));
+    // Set up default drive command
+    m_drive.SetDefaultCommand(frc2::RunCommand(
+        [this] {
+            m_drive.ArcadeDrive(-m_driverController.GetY(lHand),
+                                m_driverController.GetX(rHand));
+        },
+        {&m_drive}));
+    
 }
 
-void RobotContainer::ConfigureButtonBindings() {
-  // Configure your button bindings here
-
-  // While holding the shoulder button, drive at half speed
-  frc2::JoystickButton(&m_driverController, 6)
-      .WhenPressed(&m_driveHalfSpeed)
-      .WhenReleased(&m_driveFullSpeed);
+void RobotContainer::ConfigureButtonBindings()
+{
+    // Configure your button bindings here
+frc2::JoystickButton(&m_driverController, (int)frc::XboxController::Button::kX)
+                .WhenPressed(&m_shooterToggle);
+    frc2::JoystickButton(&m_driverController, (int)frc::XboxController::Button::kBumperRight)
+        .WhenPressed(&m_driveFullSpeed)
+        .WhenReleased(&m_driveHalfSpeed);
+     frc2::JoystickButton(&m_driverController, (int)frc::XboxController::Button::kA)
+        .WhenPressed(&m_ShooterOn)
+        .WhenReleased(&m_ShooterOff);
+    frc2::JoystickButton(&m_driverController, (int)frc::XboxController::Button::kBumperLeft)
+        .WhenPressed(&m_TargetToggle);
+    frc2::JoystickButton(&m_driverController, (int)frc::XboxController::Button::kB)
+        .WhenPressed(&m_IntakeToggle);
+    frc2::JoystickButton(&m_driverController, (int)frc::XboxController::Button::kY)
+        .WhenPressed(&m_Home);
+    frc2::JoystickButton(&m_driverController, (int)frc::XboxController::Button::kStart)
+        .WhenPressed(&m_ResetOdometry);        
 }
 
-frc2::Command* RobotContainer::GetAutonomousCommand() {
-  // Create a voltage constraint to ensure we don't accelerate too fast
-  frc::DifferentialDriveVoltageConstraint autoVoltageConstraint(
-      frc::SimpleMotorFeedforward<units::meters>(
-          DriveConstants::ks, DriveConstants::kv, DriveConstants::ka),
-      DriveConstants::kDriveKinematics, 10_V);
+frc2::Command *RobotContainer::GetAutonomousCommand()
+{
+    // Create a voltage constraint to ensure we don't accelerate too fast
+    frc::DifferentialDriveVoltageConstraint autoVoltageConstraint(
+        frc::SimpleMotorFeedforward<units::meters>(
+            DriveConstants::ks, DriveConstants::kv, DriveConstants::ka),
+        DriveConstants::kDriveKinematics, 10_V);
 
-  // Set up config for trajectory
-  frc::TrajectoryConfig config(AutoConstants::kMaxSpeed,
-                               AutoConstants::kMaxAcceleration);
-  // Add kinematics to ensure max speed is actually obeyed
-  config.SetKinematics(DriveConstants::kDriveKinematics);
-  // Apply the voltage constraint
-  config.AddConstraint(autoVoltageConstraint);
+    // Set up config for trajectory
+    frc::TrajectoryConfig config(AutoConstants::kMaxSpeed,
+                                 AutoConstants::kMaxAcceleration);
+    // Add kinematics to ensure max speed is actually obeyed
+    config.SetKinematics(DriveConstants::kDriveKinematics);
+    // Apply the voltage constraint
+    config.AddConstraint(autoVoltageConstraint);
 
-  // An example trajectory to follow.  All units in meters.
-  auto exampleTrajectory = frc::TrajectoryGenerator::GenerateTrajectory(
-      // Start at the origin facing the +X direction
-      m_drive.GetPose(),
-      // Pass through these two interior waypoints, making an 's' curve path
-      {frc::Translation2d(7_m,0_m),
-      frc::Translation2d(7_m,3_m),
-      frc::Translation2d(7_m,3_m),
-      frc::Translation2d(7_m,3_m)},
-      // End 3 meters straight ahead of where we started, facing forward
-      frc::Pose2d(1_m, 3_m, frc::Rotation2d(180_deg)),
-      // Pass the config
-      config);
+    // An example trajectory to follow.  All units in meters.
+    auto exampleTrajectory = frc::TrajectoryGenerator::GenerateTrajectory(
+        // Start at the origin facing the +X direction
+        frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
+        // Pass through these two interior waypoints, making an 's' curve path
+        {
+         frc::Translation2d(7_m, 0_m), 
+         frc::Translation2d(7_m, 3_m)
+         },
+        // End 3 meters straight ahead of where we started, facing forward
+        frc::Pose2d(1_m, 3_m, frc::Rotation2d(180_deg)),
+        // Pass the config
+        config);
 
-  frc2::RamseteCommand ramseteCommand(
-      exampleTrajectory, [this]() { return m_drive.GetPose(); },
-      frc::RamseteController(AutoConstants::kRamseteB,
-                             AutoConstants::kRamseteZeta),
-      frc::SimpleMotorFeedforward<units::meters>(
-          DriveConstants::ks, DriveConstants::kv, DriveConstants::ka),
-      DriveConstants::kDriveKinematics,
-      [this] { return m_drive.GetWheelSpeeds(); },
-      frc2::PIDController(DriveConstants::kPDriveVel, 0, 0),
-      frc2::PIDController(DriveConstants::kPDriveVel, 0, 0),
-      [this](auto left, auto right) { m_drive.TankDriveVolts(left, right); },
-      {&m_drive});
+    frc2::RamseteCommand ramseteCommand(
+        exampleTrajectory, [this]() { return m_drive.GetPose(); },
+        frc::RamseteController(AutoConstants::kRamseteB,
+                               AutoConstants::kRamseteZeta),
+        frc::SimpleMotorFeedforward<units::meters>(
+            DriveConstants::ks, DriveConstants::kv, DriveConstants::ka),
+        DriveConstants::kDriveKinematics,
+        [this] { return m_drive.GetWheelSpeeds(); },
+        frc2::PIDController(DriveConstants::kPDriveVel, DriveConstants::kIDriveVel,DriveConstants::kDDriveVel),
+        frc2::PIDController(DriveConstants::kPDriveVel, DriveConstants::kIDriveVel,DriveConstants::kDDriveVel),
+        [this](auto left, auto right) { m_drive.TankDriveVolts(left, right); },
+        {&m_drive});
 
-  // Reset odometry to the starting pose of the trajectory.
-  m_drive.ResetOdometry(exampleTrajectory.InitialPose());
+    // Reset odometry to the starting pose of the trajectory.
+    m_drive.ResetOdometry(exampleTrajectory.InitialPose());
+    m_shooter.SetAutonomous(true);
+    // no auto
+    return new frc2::SequentialCommandGroup(
+        std::move(ramseteCommand),
+        frc2::InstantCommand([this] { m_drive.TankDriveVolts(0_V, 0_V); }, {}));
+    
+}
+frc2::Command *RobotContainer::Home()
+{
+    // Create a voltage constraint to ensure we don't accelerate too fast
+    frc::DifferentialDriveVoltageConstraint autoVoltageConstraint(
+        frc::SimpleMotorFeedforward<units::meters>(
+            DriveConstants::ks, DriveConstants::kv, DriveConstants::ka),
+        DriveConstants::kDriveKinematics, 10_V);
 
-  // no auto
-  return new frc2::SequentialCommandGroup(
-      std::move(ramseteCommand),
-      frc2::InstantCommand([this] { m_drive.TankDriveVolts(0_V, 0_V); }, {}));
+    // Set up config for trajectory
+    frc::TrajectoryConfig config(2_mps,1_mps_sq);
+    // Add kinematics to ensure max speed is actually obeyed
+    config.SetKinematics(DriveConstants::kDriveKinematics);
+    // Apply the voltage constraint
+    config.AddConstraint(autoVoltageConstraint);
+
+    // An example trajectory to follow.  All units in meters.
+    auto exampleTrajectory = frc::TrajectoryGenerator::GenerateTrajectory(
+        // Start at the origin facing the +X direction
+        m_drive.GetPose(),
+        // Pass through these two interior waypoints, making an 's' curve path
+        {     
+            frc::Translation2d(1_m, 1_m)
+         },
+        // End 3 meters straight ahead of where we started, facing forward
+        frc::Pose2d(0.5_m, 0_m, frc::Rotation2d(0_deg)),
+        // Pass the config
+        config);
+
+    frc2::RamseteCommand ramseteCommand(
+        exampleTrajectory, [this]() { return m_drive.GetPose(); },
+        frc::RamseteController(AutoConstants::kRamseteB,
+                               AutoConstants::kRamseteZeta),
+        frc::SimpleMotorFeedforward<units::meters>(
+            DriveConstants::ks, DriveConstants::kv, DriveConstants::ka),
+        DriveConstants::kDriveKinematics,
+        [this] { return m_drive.GetWheelSpeeds(); },
+        frc2::PIDController(DriveConstants::kPDriveVel, 0,0),
+        frc2::PIDController(DriveConstants::kPDriveVel, 0,0),
+        [this](auto left, auto right) { m_drive.TankDriveVolts(left, right); },
+        {&m_drive});
+
+    // Reset odometry to the starting pose of the trajectory.
+    m_shooter.SetAutonomous(true);
+    // no auto
+    return new frc2::SequentialCommandGroup(
+        std::move(ramseteCommand),
+        frc2::InstantCommand([this] { m_drive.TankDriveVolts(0_V, 0_V); }, {}));
+    
 }
