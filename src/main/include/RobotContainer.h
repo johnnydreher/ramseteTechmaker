@@ -31,7 +31,10 @@ class RobotContainer
 public:
   RobotContainer();
 
-  frc2::Command *GetAutonomousCommand();
+  frc2::Command *GetCaminhoA();
+  frc2::Command *GetCaminhoB();
+  frc2::Command *GetCaminhoC();
+
 
   DriveSubsystem m_drive;
   ShooterSubsystem m_shooter;
