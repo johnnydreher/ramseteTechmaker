@@ -42,6 +42,11 @@ class ShooterSubsystem : public frc2::SubsystemBase {
   void ToggleTarget();
   void SetAutonomous(bool state);
   void ToggleIntake();
+  void SetIntake(bool state, bool motorOnly);
+  void RevertIntake(bool state);
+  void ToggleConveyor();
+  void RevertShoot(bool act);
+
 
  private:
   // Components (e.g. motor controllers and sensors) should generally be
@@ -62,6 +67,6 @@ class ShooterSubsystem : public frc2::SubsystemBase {
   frc::Compressor compressor;
   // The motors on the right side of the drive
   frc::SpeedControllerGroup m_motors{m_right, m_left};
-  frc::SpeedControllerGroup m_shooter{m_middle, m_conveyor, m_intake};
+  frc::SpeedControllerGroup m_shooter{m_middle, m_conveyor};
 
 };

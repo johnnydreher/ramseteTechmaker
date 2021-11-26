@@ -57,7 +57,7 @@ constexpr auto ka = 0.0375 * 1_V * 1_s * 1_s / 1_m;
 // Example value only - as above, this must be tuned for your drive!
 //constexpr double kPDriveVel = 0.848;
 constexpr double kPDriveVel = 0.848;
-constexpr double kIDriveVel = 0.8;
+constexpr double kIDriveVel = 0.4;
 constexpr double kDDriveVel = 0.1;
 }  // namespace DriveConstants
 namespace AutoConstants {
@@ -92,5 +92,7 @@ constexpr frc::GenericHID::JoystickHand lHand = frc::GenericHID::kLeftHand;
 constexpr frc::GenericHID::JoystickHand rHand = frc::GenericHID::kRightHand;
 namespace OIConstants {
 constexpr int kDriverControllerPort = 0;
+constexpr int kDriverControllerPort2 = 1;
+
  
 }  // namespace OIConstants

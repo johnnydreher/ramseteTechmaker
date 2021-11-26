@@ -35,7 +35,7 @@ void Robot::DisabledPeriodic() {}
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
-  m_autonomousCommand = m_container.GetCaminhoC();
+  m_autonomousCommand = m_container.GetCaminhoE();
 
   if (m_autonomousCommand != nullptr) {
     m_autonomousCommand->Schedule();
@@ -49,6 +49,7 @@ void Robot::TeleopInit() {
   // teleop starts running. If you want the autonomous to
   // continue until interrupted by another command, remove
   // this line or comment it out.
+  
   m_container.m_shooter.SetAutonomous(false);
   if (m_autonomousCommand != nullptr) {
     m_autonomousCommand->Cancel();
@@ -59,7 +60,9 @@ void Robot::TeleopInit() {
 /**
  * This function is called periodically during operator control.
  */
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+  
+}
 
 /**
  * This function is called periodically during test mode.
