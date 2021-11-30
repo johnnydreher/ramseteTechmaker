@@ -40,12 +40,13 @@ class ShooterSubsystem : public frc2::SubsystemBase {
   void SetConveyor(double speed);
   double Get();
   void ToggleTarget();
-  void SetAutonomous(bool state);
+  //void SetAutonomous(bool state);
   void ToggleIntake();
   void SetIntake(bool state, bool motorOnly);
   void RevertIntake(bool state);
   void ToggleConveyor();
   void RevertShoot(bool act);
+  void SetCompressor(bool state);
 
 
  private:

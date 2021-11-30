@@ -130,15 +130,21 @@ void ShooterSubsystem::ToggleConveyor()
     m_conveyor.Set(0);
   }
 }
-void ShooterSubsystem::SetAutonomous(bool state)
+/*void ShooterSubsystem::SetAutonomous(bool state)
 {
   autonomous = state;
   if (autonomous)
     compressor.Stop();
   else
     compressor.Start();
+}*/
+void ShooterSubsystem::SetCompressor(bool state)
+{
+  if (state)
+    compressor.Start();
+  else
+    compressor.Stop();
 }
-
 double ShooterSubsystem::Get()
 {
   // Implementation of subsystem periodic method goes here.

@@ -172,7 +172,6 @@ frc2::Command *RobotContainer::GetCaminhoA()
 
     // Reset odometry to the starting pose of the trajectory.
     m_drive.ResetOdometry(exampleTrajectory.InitialPose());
-    m_shooter.SetAutonomous(true);
     // no auto
     return new frc2::SequentialCommandGroup(
         std::move(ramseteCommand),
@@ -223,7 +222,6 @@ frc2::Command *RobotContainer::GetCaminhoB()
 
     // Reset odometry to the starting pose of the trajectory.
     m_drive.ResetOdometry(exampleTrajectory.InitialPose());
-    m_shooter.SetAutonomous(true);
     // no auto
     return new frc2::SequentialCommandGroup(
         std::move(ramseteCommand),
@@ -277,7 +275,6 @@ frc2::Command *RobotContainer::GetCaminhoC()
 
     // Reset odometry to the starting pose of the trajectory.
     m_drive.ResetOdometry(exampleTrajectory.InitialPose());
-    m_shooter.SetAutonomous(true);
     // no auto
     return new frc2::SequentialCommandGroup(
         std::move(ramseteCommand),
@@ -425,8 +422,7 @@ frc2::Command *RobotContainer::Home()
         [this](auto left, auto right) { m_drive.TankDriveVolts(left, right); },
         {&m_drive});
 
-    // Reset odometry to the starting pose of the trajectory.
-    m_shooter.SetAutonomous(true);
+
     // no auto
     return new frc2::SequentialCommandGroup(
         std::move(ramseteCommand),
@@ -473,17 +469,21 @@ frc2::Command *RobotContainer::FinalAutonomousCommand()
         [this](auto left, auto right) { m_drive.TankDriveVolts(left, right); },
         {&m_drive});
 
-    // Reset odometry to the starting pose of the trajectory.
-    m_drive.ResetOdometry(exampleTrajectory.InitialPose());
-    m_shooter.SetIntake(1,0);
-    m_shooter.SetConveyor(-1);
-    // no auto
+    
     return new frc2::SequentialCommandGroup(
+        frc2::InstantCommand([this] { m_shooter.SetCompressor(1); }, {}),
+        frc2::WaitCommand(1_s),
+        frc2::InstantCommand([this] { m_drive.ResetOdometry(frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg))); }, {}),
+        m_IntakeSet,
+        m_ConveyorSet,
         std::move(ramseteCommand),
         frc2::InstantCommand([this] { m_drive.TankDriveVolts(0_V, 0_V); }, {}),
         m_IntakeReset,
         m_shooterRotorOn,
         frc2::WaitCommand(1_s),
-        m_ShooterOn
+        m_ShooterOn,
+        frc2::WaitCommand(5_s),
+        m_ShooterOff,
+        m_shooterRotorOff
         );
 }
