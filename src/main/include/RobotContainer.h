@@ -37,8 +37,8 @@ public:
   frc2::Command *GetCaminhoC();
   frc2::Command *GetCaminhoD();
   frc2::Command *GetCaminhoE();
-  void FinalAutonomousCommandPeriodic();
-  void FinalAutonomousCommandInit();
+  frc2::Command *FinalAutonomousCommand();
+
 
   // The chooser for the autonomous routines
   DriveSubsystem m_drive;
