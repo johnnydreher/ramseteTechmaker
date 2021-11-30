@@ -35,14 +35,17 @@ void Robot::DisabledPeriodic() {}
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
-  m_autonomousCommand = m_container.GetCaminhoE();
+  /*m_autonomousCommand = m_container.GetCaminhoE();
 
   if (m_autonomousCommand != nullptr) {
     m_autonomousCommand->Schedule();
-  }
+  }*/
+  m_container.FinalAutonomousCommandInit();
 }
 
-void Robot::AutonomousPeriodic() {}
+void Robot::AutonomousPeriodic() {
+  m_container.FinalAutonomousCommandPeriodic();
+}
 
 void Robot::TeleopInit() {
   // This makes sure that the autonomous stops running when

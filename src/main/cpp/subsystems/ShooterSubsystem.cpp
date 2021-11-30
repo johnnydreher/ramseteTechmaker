@@ -46,12 +46,14 @@ void ShooterSubsystem::Shoot(bool act)
   {
     m_intake.Set(0.5);
     m_middle.Set(-1);
+     m_conveyor.Set(-1);
     intake.Set(frc::DoubleSolenoid::kReverse);
   }
   else
   {
     m_middle.Set(0);
     m_intake.Set(0);
+     m_conveyor.Set(0);
   }
 }
 void ShooterSubsystem::RevertShoot(bool act)
@@ -84,7 +86,7 @@ void ShooterSubsystem::SetIntake(bool state, bool motorOnly)
   if (state == 1)
   {
     if(!motorOnly) intake.Set(frc::DoubleSolenoid::kForward);
-    m_intake.Set(0.3);
+    m_intake.Set(0.15);
   }
   else
   {
@@ -114,7 +116,7 @@ void ShooterSubsystem::ToggleIntake()
   }
   else
   {
-    m_intake.Set(0.3);
+    m_intake.Set(0.15);
   }
 }
 void ShooterSubsystem::ToggleConveyor()

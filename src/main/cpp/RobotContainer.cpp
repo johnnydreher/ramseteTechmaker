@@ -104,7 +104,7 @@ void RobotContainer::ConfigureButtonBindings()
         .WhenReleased(&m_ShooterOff);
     frc2::JoystickButton(&m_driverController3, 2)
         .WhenPressed(&m_ConveyorSet)
-        .WhenReleased(&m_ConveyorReset);        
+        .WhenReleased(&m_ConveyorReset);
     frc2::JoystickButton(&m_driverController3, 1)
         .WhenPressed(&m_shooterRotorOn)
         .WhenReleased(&m_shooterRotorOff);
@@ -121,7 +121,7 @@ void RobotContainer::ConfigureButtonBindings()
         .WhenReleased(&m_IntakeReset);
     frc2::JoystickButton(&m_driverController3, 10)
         .WhenPressed(&m_IntakeRewind)
-        .WhenReleased(&m_IntakeStopRewind);        
+        .WhenReleased(&m_IntakeStopRewind);
     frc2::JoystickButton(&m_driverController3, 11)
         .WhenPressed(&m_IntakeSetMotor)
         .WhenReleased(&m_IntakeResetMotor);
@@ -430,4 +430,26 @@ frc2::Command *RobotContainer::Home()
     return new frc2::SequentialCommandGroup(
         std::move(ramseteCommand),
         frc2::InstantCommand([this] { m_drive.TankDriveVolts(0_V, 0_V); }, {}));
+}
+void RobotContainer::FinalAutonomousCommandInit()
+{
+    m_drive.ResetOdometry(frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)));
+    m_shooter.SetIntake(1, 0);
+    m_shooter.ToggleIntake();
+    m_shooter.SetConveyor(-1);
+    m_drive.TankDriveVolts(8_V, 8_V);
+}
+void RobotContainer::FinalAutonomousCommandPeriodic()
+{
+    double aux = m_drive.GetAverageEncoderDistance();
+    if (aux >= 2.1)
+    {
+
+        m_drive.TankDriveVolts(0_V, 0_V);
+        m_shooter.SetIntake(0, 1);
+        m_shooter.SetConveyor(0);
+        m_shooter.Set(ShooterConstants::kMaxSpeed);
+        frc::Wait(1);
+        m_shooter.Shoot(1);
+    }
 }
