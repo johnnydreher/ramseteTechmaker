@@ -483,26 +483,23 @@ frc2::Command *RobotContainer::FinalAutonomousCommand()
         }, {}),
         //faço a jogada de balanco para ajustar a primeira bola no conveyor
          frc2::InstantCommand([this] {
-           static units::second_t timeout = timer.GetFPGATimestamp() + 500_ms;
             uint8_t throwRepeater = 0;
-            for (throwRepeater = 0; throwRepeater < 6; throwRepeater++)
+            m_drive.ResetEncoders();
+            for (throwRepeater = 0; throwRepeater < 3; throwRepeater++)
             {
-                timeout = timer.GetFPGATimestamp() + 500_ms;
-                while (timer.GetFPGATimestamp() < timeout)
-                {
-                if(throwRepeater%2==0)
+                while (m_drive.GetAverageEncoderDistance()>-0.2)
                     m_drive.TankDriveVolts(-4_V, -4_V);
-                else
+                while (m_drive.GetAverageEncoderDistance()<0)
                     m_drive.TankDriveVolts(4_V, 4_V);
-                }
+                
             }
         },{}),
         //paro de atuar o conveyor para não afogar com as bolas
         m_ConveyorReset, 
-        //me desloco 1.2m para coletar a segunda bola e ficar em posição de tiro
+        //me desloco 1m para coletar a segunda bola e ficar em posição de tiro
         frc2::InstantCommand([this] {
             m_drive.ResetEncoders();
-                while (m_drive.GetAverageEncoderDistance()<1.2)
+                while (m_drive.GetAverageEncoderDistance()<1)
                 {
                     m_drive.TankDriveVolts(4_V, 4_V);
                 }
@@ -521,18 +518,15 @@ frc2::Command *RobotContainer::FinalAutonomousCommand()
         //atiro as bolas e faco o balanco do robo para que a segunda bola seja atirada tambem
         m_ShooterOn, 
         frc2::InstantCommand([this] {
-           static units::second_t timeout = timer.GetFPGATimestamp() + 500_ms;
-            uint8_t throwRepeater = 0;
-            for (throwRepeater = 0; throwRepeater < 6; throwRepeater++)
+           uint8_t throwRepeater = 0;
+            m_drive.ResetEncoders();
+            for (throwRepeater = 0; throwRepeater < 3; throwRepeater++)
             {
-                timeout = timer.GetFPGATimestamp() + 500_ms;
-                while (timer.GetFPGATimestamp() < timeout)
-                {
-                if(throwRepeater%2==0)
+                while (m_drive.GetAverageEncoderDistance()>-0.2)
                     m_drive.TankDriveVolts(-4_V, -4_V);
-                else
+                while (m_drive.GetAverageEncoderDistance()<0)
                     m_drive.TankDriveVolts(4_V, 4_V);
-                }
+                
             }
         },{}),
         //desligo o shooter, vou para a ultima
@@ -546,30 +540,25 @@ frc2::Command *RobotContainer::FinalAutonomousCommand()
         //depois de coletar recolho  o intake e retorno para a posição de tiro
         m_IntakeReset, 
         frc2::InstantCommand([this] {
-            static units::second_t timeout = timer.GetFPGATimestamp() + 300_ms;
-                while (timer.GetFPGATimestamp() < timeout)
-                {
-                    m_drive.TankDriveVolts(-5_V, -5_V);
-                }
-            
-           
+            uint8_t throwRepeater = 0;
+            m_drive.ResetEncoders();
+            while (m_drive.GetAverageEncoderDistance()>-0.5)
+                    m_drive.TankDriveVolts(-4_V, -4_V);
+                
+         
              },{}),
         //atiro a ultima bola, balancando o robo para que a mesma entre no conveyor
         m_ShooterOn,
         frc2::InstantCommand([this] {
-            static units::second_t timeout = timer.GetFPGATimestamp() + 500_ms;
-              
             uint8_t throwRepeater = 0;
-            for (throwRepeater = 0; throwRepeater < 4; throwRepeater++)
+            m_drive.ResetEncoders();
+            for (throwRepeater = 0; throwRepeater < 3; throwRepeater++)
             {
-                timeout = timer.GetFPGATimestamp() + 500_ms;
-                while (timer.GetFPGATimestamp() < timeout)
-                {
-                if(throwRepeater%2==0)
+                while (m_drive.GetAverageEncoderDistance()>-0.2)
                     m_drive.TankDriveVolts(-4_V, -4_V);
-                else
+                while (m_drive.GetAverageEncoderDistance()<0)
                     m_drive.TankDriveVolts(4_V, 4_V);
-                }
+                
             }  },{}),
         //desativo os sistemas para economia de bateria
         m_ShooterOff, 
