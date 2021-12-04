@@ -8,12 +8,14 @@
 #include <frc/kinematics/DifferentialDriveWheelSpeeds.h>
 
 using namespace ShooterConstants;
-
+#define testeSemIntake
 ShooterSubsystem::ShooterSubsystem()
     : m_left{kLeftMotorPort},
       m_right{kRightMotorPort},
       m_middle{kMiddleMotorPort},
       m_conveyor{kConveyorMotorPort},
+      m_leftIntake{kIntakeLeftMotorPort},
+      m_rightIntake{kIntakeRightMotorPort},
       target{kTargetUp, kTargetDown},
       intake{kIntakeUp, kIntakeDown},
       m_intake{kIntakeMotorPort, rev::CANSparkMaxLowLevel::MotorType::kBrushless}
@@ -21,7 +23,9 @@ ShooterSubsystem::ShooterSubsystem()
   m_shooter.SetInverted(true);
   m_conveyor.SetInverted(true);
   target.Set(frc::DoubleSolenoid::kForward);
+#ifndef testeSemIntake
   intake.Set(frc::DoubleSolenoid::kReverse);
+#endif
 }
 
 void ShooterSubsystem::Periodic()
@@ -47,7 +51,9 @@ void ShooterSubsystem::Shoot(bool act)
     m_intake.Set(0.5);
     m_middle.Set(-1);
      m_conveyor.Set(-1);
+#ifndef testeSemIntake
     intake.Set(frc::DoubleSolenoid::kReverse);
+#endif
   }
   else
   {
@@ -85,25 +91,39 @@ void ShooterSubsystem::SetIntake(bool state, bool motorOnly)
 {
   if (state == 1)
   {
+    #ifndef testeSemIntake
     if(!motorOnly) intake.Set(frc::DoubleSolenoid::kForward);
-    m_intake.Set(0.15);
+    #endif
+    m_intake.Set(0.3);
+    m_rightIntake.Set(1);
+    m_leftIntake.Set(-1);
   }
   else
   {
+    #ifndef testeSemIntake
     if(!motorOnly)intake.Set(frc::DoubleSolenoid::kReverse);
+    #endif
     m_intake.Set(0);
+    m_rightIntake.Set(0);
+    m_leftIntake.Set(0);
   }
 }
 void ShooterSubsystem::RevertIntake(bool state)
 {
+  #ifndef testeSemIntake
   intake.Set(frc::DoubleSolenoid::kReverse);
+  #endif
   if (state == 1)
   {
     m_intake.Set(-0.5);
+    m_rightIntake.Set(-1);
+    m_leftIntake.Set(1);
   }
   else
   {
     m_intake.Set(0);
+    m_rightIntake.Set(0);
+    m_leftIntake.Set(0);
   }
 }
 void ShooterSubsystem::ToggleIntake()
@@ -113,10 +133,14 @@ void ShooterSubsystem::ToggleIntake()
   {
     Set(0);
     m_intake.Set(0);
+    m_rightIntake.Set(0);
+    m_leftIntake.Set(0);
   }
   else
   {
-    m_intake.Set(0.15);
+    m_intake.Set(0.3);
+    m_rightIntake.Set(1);
+    m_leftIntake.Set(-1);
   }
 }
 void ShooterSubsystem::ToggleConveyor()

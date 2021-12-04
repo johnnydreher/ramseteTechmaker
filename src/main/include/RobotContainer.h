@@ -13,7 +13,7 @@
 #include <frc2/command/PIDCommand.h>
 #include <frc2/command/ParallelRaceGroup.h>
 #include <frc2/command/RunCommand.h>
-
+#include <frc2/Timer.h>
 #include "Constants.h"
 #include "subsystems/DriveSubsystem.h"
 #include "subsystems/ShooterSubsystem.h"
@@ -49,6 +49,7 @@ private:
   frc::XboxController m_driverController{OIConstants::kDriverControllerPort};
   frc::XboxController m_driverController2{OIConstants::kDriverControllerPort2};
   frc::Joystick m_driverController3{OIConstants::kDriverControllerPort2};
+  frc2::Timer timer;
 
   // The robot's subsystems and commands are defined here...
   frc2::Command *m_HomeCommand = nullptr;

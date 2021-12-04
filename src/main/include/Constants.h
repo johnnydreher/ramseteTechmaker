@@ -56,12 +56,15 @@ constexpr auto ka = 0.0375 * 1_V * 1_s * 1_s / 1_m;
 
 // Example value only - as above, this must be tuned for your drive!
 //constexpr double kPDriveVel = 0.848;
-constexpr double kPDriveVel = 0.848;
+/*constexpr double kPDriveVel = 0.848;
 constexpr double kIDriveVel = 0.4;
-constexpr double kDDriveVel = 0.1;
+constexpr double kDDriveVel = 0.1;*/
+constexpr double kPDriveVel = 0.1;
+constexpr double kIDriveVel = 0.0;
+constexpr double kDDriveVel = 0.0;
 }  // namespace DriveConstants
 namespace AutoConstants {
-constexpr auto kMaxSpeed = 5_mps;
+constexpr auto kMaxSpeed = 0.5_mps;
 constexpr auto kMaxAcceleration = 1_mps_sq;
 
 // Reasonable baseline values for a RAMSETE follower in units of meters and
@@ -77,6 +80,9 @@ constexpr int kRightMotorPort = 2;
 constexpr int kMiddleMotorPort = 3;
 constexpr int kConveyorMotorPort = 0;
 constexpr int kIntakeMotorPort = 8;
+constexpr int kIntakeLeftMotorPort = 9;
+constexpr int kIntakeRightMotorPort = 10;
+
 
 
 constexpr int kTargetUp = 2;

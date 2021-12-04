@@ -14,10 +14,10 @@
 #include <frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h>
 #include <frc2/command/InstantCommand.h>
 #include <frc2/command/RamseteCommand.h>
+#include <frc2/command/RunCommand.h>
 #include <frc2/command/SequentialCommandGroup.h>
 #include <frc2/command/button/JoystickButton.h>
 #include <frc2/command/button/POVButton.h>
-#include <frc2/command/WaitCommand.h>
 #include "cameraserver/CameraServer.h"
 #include "Constants.h"
 
@@ -422,7 +422,6 @@ frc2::Command *RobotContainer::Home()
         [this](auto left, auto right) { m_drive.TankDriveVolts(left, right); },
         {&m_drive});
 
-
     // no auto
     return new frc2::SequentialCommandGroup(
         std::move(ramseteCommand),
@@ -444,20 +443,15 @@ frc2::Command *RobotContainer::FinalAutonomousCommand()
     // Apply the voltage constraint
     config.AddConstraint(autoVoltageConstraint);
 
-    // An example trajectory to follow.  All units in meters.
-    auto exampleTrajectory = frc::TrajectoryGenerator::GenerateTrajectory(
-        // Start at the origin facing the +X direction
+
+    auto Trajectory2 = frc::TrajectoryGenerator::GenerateTrajectory(
         frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        {
-            frc::Translation2d(1_m, 0_m),
-            frc::Translation2d(2.1_m, -1.54_m)},
-        // End 3 meters straight ahead of where we started, facing forward
-        frc::Pose2d(2_m, 0_m, frc::Rotation2d(0_deg)),
-        // Pass the config
+        {},
+        frc::Pose2d(0.5_m, 0_m, frc::Rotation2d(0_deg)),
         config);
-    frc2::RamseteCommand ramseteCommand(
-        exampleTrajectory, [this]() { return m_drive.GetPose(); },
+   
+    frc2::RamseteCommand ramseteCommand2(
+        Trajectory2, [this]() { return m_drive.GetPose(); },
         frc::RamseteController(AutoConstants::kRamseteB,
                                AutoConstants::kRamseteZeta),
         frc::SimpleMotorFeedforward<units::meters>(
@@ -468,22 +462,116 @@ frc2::Command *RobotContainer::FinalAutonomousCommand()
         frc2::PIDController(DriveConstants::kPDriveVel, DriveConstants::kIDriveVel, DriveConstants::kDDriveVel),
         [this](auto left, auto right) { m_drive.TankDriveVolts(left, right); },
         {&m_drive});
-
-    
+ 
     return new frc2::SequentialCommandGroup(
+        //ligo o compressor
         frc2::InstantCommand([this] { m_shooter.SetCompressor(1); }, {}),
-        frc2::WaitCommand(1_s),
-        frc2::InstantCommand([this] { m_drive.ResetOdometry(frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg))); }, {}),
-        m_IntakeSet,
+        //aguardo 2 segundos para pressurizar e baixar o intake
+        frc2::InstantCommand([this] {
+            static units::second_t timeout = timer.GetFPGATimestamp() + 2_s;
+            while (timer.GetFPGATimestamp() < timeout)
+                m_drive.TankDriveVolts(0_V, 0_V);
+        }, {}),
+        //baixo o intake e ligo o conveyor
+        m_IntakeSet, 
         m_ConveyorSet,
-        std::move(ramseteCommand),
-        frc2::InstantCommand([this] { m_drive.TankDriveVolts(0_V, 0_V); }, {}),
-        m_IntakeReset,
-        m_shooterRotorOn,
-        frc2::WaitCommand(1_s),
-        m_ShooterOn,
-        frc2::WaitCommand(5_s),
+        //aguardo 300 ms para os comandos mecanicos funcionarem 
+         frc2::InstantCommand([this] {
+            static units::second_t timeout = timer.GetFPGATimestamp() + 300_ms;
+            while (timer.GetFPGATimestamp() < timeout)
+                m_drive.TankDriveVolts(0_V, 0_V);
+        }, {}),
+        //faço a jogada de balanco para ajustar a primeira bola no conveyor
+         frc2::InstantCommand([this] {
+           static units::second_t timeout = timer.GetFPGATimestamp() + 500_ms;
+            uint8_t throwRepeater = 0;
+            for (throwRepeater = 0; throwRepeater < 6; throwRepeater++)
+            {
+                timeout = timer.GetFPGATimestamp() + 500_ms;
+                while (timer.GetFPGATimestamp() < timeout)
+                {
+                if(throwRepeater%2==0)
+                    m_drive.TankDriveVolts(-4_V, -4_V);
+                else
+                    m_drive.TankDriveVolts(4_V, 4_V);
+                }
+            }
+        },{}),
+        //paro de atuar o conveyor para não afogar com as bolas
+        m_ConveyorReset, 
+        //me desloco 1.2m para coletar a segunda bola e ficar em posição de tiro
+        frc2::InstantCommand([this] {
+            m_drive.ResetEncoders();
+                while (m_drive.GetAverageEncoderDistance()<1.2)
+                {
+                    m_drive.TankDriveVolts(4_V, 4_V);
+                }
+           
+             },{}),
+        //aciono o rotor do shooter e aguardo 250ms para que esteja na aceleração maxima
+        m_shooterRotorOn, 
+        frc2::InstantCommand([this] {
+            static units::second_t timeout = timer.GetFPGATimestamp() + 250_ms;
+            
+            while (timer.GetFPGATimestamp() < timeout)
+                m_drive.TankDriveVolts(0_V, 0_V);
+            
+            
+        },{}),
+        //atiro as bolas e faco o balanco do robo para que a segunda bola seja atirada tambem
+        m_ShooterOn, 
+        frc2::InstantCommand([this] {
+           static units::second_t timeout = timer.GetFPGATimestamp() + 500_ms;
+            uint8_t throwRepeater = 0;
+            for (throwRepeater = 0; throwRepeater < 6; throwRepeater++)
+            {
+                timeout = timer.GetFPGATimestamp() + 500_ms;
+                while (timer.GetFPGATimestamp() < timeout)
+                {
+                if(throwRepeater%2==0)
+                    m_drive.TankDriveVolts(-4_V, -4_V);
+                else
+                    m_drive.TankDriveVolts(4_V, 4_V);
+                }
+            }
+        },{}),
+        //desligo o shooter, vou para a ultima
         m_ShooterOff,
-        m_shooterRotorOff
-        );
+        //vou coletar a ultima bola, entaõ reseto a odometria, ligo o intake e o conveyor
+        frc2::InstantCommand([this] { m_drive.ResetOdometry(frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg))); }, {}), 
+        m_IntakeSet, 
+        m_ConveyorSet, 
+        std::move(ramseteCommand2),
+        frc2::InstantCommand([this] { m_drive.TankDriveVolts(0_V, 0_V); }, {}), 
+        //depois de coletar recolho  o intake e retorno para a posição de tiro
+        m_IntakeReset, 
+        frc2::InstantCommand([this] {
+            static units::second_t timeout = timer.GetFPGATimestamp() + 300_ms;
+                while (timer.GetFPGATimestamp() < timeout)
+                {
+                    m_drive.TankDriveVolts(-5_V, -5_V);
+                }
+            
+           
+             },{}),
+        //atiro a ultima bola, balancando o robo para que a mesma entre no conveyor
+        m_ShooterOn,
+        frc2::InstantCommand([this] {
+            static units::second_t timeout = timer.GetFPGATimestamp() + 500_ms;
+              
+            uint8_t throwRepeater = 0;
+            for (throwRepeater = 0; throwRepeater < 4; throwRepeater++)
+            {
+                timeout = timer.GetFPGATimestamp() + 500_ms;
+                while (timer.GetFPGATimestamp() < timeout)
+                {
+                if(throwRepeater%2==0)
+                    m_drive.TankDriveVolts(-4_V, -4_V);
+                else
+                    m_drive.TankDriveVolts(4_V, 4_V);
+                }
+            }  },{}),
+        //desativo os sistemas para economia de bateria
+        m_ShooterOff, 
+        m_shooterRotorOff);
 }

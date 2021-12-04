@@ -59,6 +59,9 @@ class ShooterSubsystem : public frc2::SubsystemBase {
   WPI_VictorSPX m_right;
   WPI_VictorSPX m_middle;
   WPI_VictorSPX m_conveyor;
+  WPI_VictorSPX m_leftIntake;
+  WPI_VictorSPX m_rightIntake;
+  
   rev::CANSparkMax m_intake;
   frc::DoubleSolenoid target;
   frc::DoubleSolenoid intake;
