@@ -8,7 +8,7 @@
 #include <frc/kinematics/DifferentialDriveWheelSpeeds.h>
 
 using namespace ShooterConstants;
-#define testeSemIntake
+//#define testeSemIntake
 ShooterSubsystem::ShooterSubsystem()
     : m_left{kLeftMotorPort},
       m_right{kRightMotorPort},
@@ -51,9 +51,7 @@ void ShooterSubsystem::Shoot(bool act)
     m_intake.Set(0.5);
     m_middle.Set(-1);
      m_conveyor.Set(-1);
-#ifndef testeSemIntake
-    intake.Set(frc::DoubleSolenoid::kReverse);
-#endif
+
   }
   else
   {

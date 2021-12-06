@@ -109,8 +109,8 @@ void RobotContainer::ConfigureButtonBindings()
     frc2::JoystickButton(&m_driverController3, 1)
         .WhenPressed(&m_shooterRotorOn)
         .WhenReleased(&m_shooterRotorOff);
-    frc2::JoystickButton(&m_driverController3, 4)
-        .WhenPressed(&m_TargetToggle);
+    //frc2::JoystickButton(&m_driverController3, 4)
+    //    .WhenPressed(&m_TargetToggle);
     frc2::JoystickButton(&m_driverController3, 5)
         .WhenPressed(&m_ConveyorSet)
         .WhenReleased(&m_ConveyorReset);
@@ -487,10 +487,10 @@ frc2::Command *RobotContainer::FinalAutonomousCommand()
             m_drive.ResetEncoders();
             for (throwRepeater = 0; throwRepeater < 3; throwRepeater++)
             {
-                while (m_drive.GetAverageEncoderDistance()>-0.2)
-                    m_drive.TankDriveVolts(-4_V, -4_V);
+                while (m_drive.GetAverageEncoderDistance()>-0.1)
+                    m_drive.TankDriveVolts(-3_V, -3_V);
                 while (m_drive.GetAverageEncoderDistance()<0)
-                    m_drive.TankDriveVolts(4_V, 4_V);
+                    m_drive.TankDriveVolts(3_V, 3_V);
                 
             }
         },{}),
@@ -522,10 +522,11 @@ frc2::Command *RobotContainer::FinalAutonomousCommand()
             m_drive.ResetEncoders();
             for (throwRepeater = 0; throwRepeater < 3; throwRepeater++)
             {
-                while (m_drive.GetAverageEncoderDistance()>-0.2)
-                    m_drive.TankDriveVolts(-4_V, -4_V);
-                while (m_drive.GetAverageEncoderDistance()<0)
-                    m_drive.TankDriveVolts(4_V, 4_V);
+                while (m_drive.GetAverageEncoderDistance()<0.1)
+                    m_drive.TankDriveVolts(3_V, 3_V);
+                while (m_drive.GetAverageEncoderDistance()>0)
+                    m_drive.TankDriveVolts(-3_V, -3_V);
+                
                 
             }
         },{}),
@@ -538,11 +539,9 @@ frc2::Command *RobotContainer::FinalAutonomousCommand()
         std::move(ramseteCommand2),
         frc2::InstantCommand([this] { m_drive.TankDriveVolts(0_V, 0_V); }, {}), 
         //depois de coletar recolho  o intake e retorno para a posição de tiro
-        m_IntakeReset, 
         frc2::InstantCommand([this] {
-            uint8_t throwRepeater = 0;
             m_drive.ResetEncoders();
-            while (m_drive.GetAverageEncoderDistance()>-0.5)
+            while (m_drive.GetAverageEncoderDistance()>-0.3)
                     m_drive.TankDriveVolts(-4_V, -4_V);
                 
          
@@ -554,10 +553,10 @@ frc2::Command *RobotContainer::FinalAutonomousCommand()
             m_drive.ResetEncoders();
             for (throwRepeater = 0; throwRepeater < 3; throwRepeater++)
             {
-                while (m_drive.GetAverageEncoderDistance()>-0.2)
-                    m_drive.TankDriveVolts(-4_V, -4_V);
+                while (m_drive.GetAverageEncoderDistance()>-0.1)
+                    m_drive.TankDriveVolts(-3_V, -3_V);
                 while (m_drive.GetAverageEncoderDistance()<0)
-                    m_drive.TankDriveVolts(4_V, 4_V);
+                    m_drive.TankDriveVolts(3_V, 3_V);
                 
             }  },{}),
         //desativo os sistemas para economia de bateria
