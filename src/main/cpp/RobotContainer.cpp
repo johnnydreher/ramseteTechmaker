@@ -468,7 +468,7 @@ frc2::Command *RobotContainer::FinalAutonomousCommand()
         frc2::InstantCommand([this] { m_shooter.SetCompressor(1); }, {}),
         //aguardo 2 segundos para pressurizar e baixar o intake
         frc2::InstantCommand([this] {
-            static units::second_t timeout = timer.GetFPGATimestamp() + 2_s;
+            static units::second_t timeout = timer.GetFPGATimestamp() + 1_s;
             while (timer.GetFPGATimestamp() < timeout)
                 m_drive.TankDriveVolts(0_V, 0_V);
         }, {}),
@@ -477,7 +477,7 @@ frc2::Command *RobotContainer::FinalAutonomousCommand()
         m_ConveyorSet,
         //aguardo 300 ms para os comandos mecanicos funcionarem 
          frc2::InstantCommand([this] {
-            static units::second_t timeout = timer.GetFPGATimestamp() + 300_ms;
+            static units::second_t timeout = timer.GetFPGATimestamp() + 250_ms;
             while (timer.GetFPGATimestamp() < timeout)
                 m_drive.TankDriveVolts(0_V, 0_V);
         }, {}),

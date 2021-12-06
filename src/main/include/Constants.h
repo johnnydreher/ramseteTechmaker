@@ -84,7 +84,6 @@ constexpr int kIntakeLeftMotorPort = 9;
 constexpr int kIntakeRightMotorPort = 10;
 
 
-
 constexpr int kTargetUp = 2;
 constexpr int kTargetDown = 3;
 
@@ -92,7 +91,7 @@ constexpr int kIntakeUp = 0;
 constexpr int kIntakeDown = 1;
 
 constexpr int kMaxSpeed = 1;
-
+constexpr double kMaxSpeedIntake = 0.2;
 }  // namespace DriveConstants
 constexpr frc::GenericHID::JoystickHand lHand = frc::GenericHID::kLeftHand;
 constexpr frc::GenericHID::JoystickHand rHand = frc::GenericHID::kRightHand;

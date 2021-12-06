@@ -92,7 +92,7 @@ void ShooterSubsystem::SetIntake(bool state, bool motorOnly)
     #ifndef testeSemIntake
     if(!motorOnly) intake.Set(frc::DoubleSolenoid::kForward);
     #endif
-    m_intake.Set(0.3);
+    m_intake.Set(kMaxSpeedIntake);
     m_rightIntake.Set(1);
     m_leftIntake.Set(-1);
   }
@@ -136,7 +136,7 @@ void ShooterSubsystem::ToggleIntake()
   }
   else
   {
-    m_intake.Set(0.3);
+    m_intake.Set(kMaxSpeedIntake);
     m_rightIntake.Set(1);
     m_leftIntake.Set(-1);
   }
